@@ -1,5 +1,3 @@
-const dotenv = require('dotenv').config();
-
 class ApiModel {
   constructor(HF_API_KEY) {
     this.HF_API_KEY = HF_API_KEY;
