@@ -45,7 +45,7 @@ function ChatIA() {
 
   const speakText = (text) => {
     if ('speechSynthesis' in window) {
-      // cancelar cualquier reproducción activa para evitar inconsistencias
+      // Cancel previous speech
       window.speechSynthesis.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
