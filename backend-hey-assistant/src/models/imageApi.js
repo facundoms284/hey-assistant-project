@@ -34,7 +34,6 @@ class ImageApiModel {
       }
 
       const data = await response.json();
-      console.log('imagedata', data);
       return data;
     } catch (error) {
       console.error(
