@@ -173,7 +173,7 @@ function ChatIA() {
   );
 
   return (
-    <Box className="flex flex-col h-screen max-w-2xl mx-auto p-4">
+    <Box className="flex flex-col h-screen max-w-full lg:max-w[2500px] mx-auto p-4 overflow-x-hidden">
       <Typography variant="h4" className="mb-4 font-bold text-center">
         Chat IA - Hey Assistant
       </Typography>
@@ -183,21 +183,23 @@ function ChatIA() {
             key={index}
             className={`mb-2 p-2 rounded-lg ${
               message.isUser ? 'bg-blue-100 ml-auto' : 'bg-gray-100'
-            } max-w-[80%]`}
+            } ${
+              message.isImage ? 'w-fit' : 'w-full'
+            } sm:max-w-[80%] max-w-[65%] p-2 md:p-4 lg:p-6 md:max-w-{70%} lg:max-w-[60%]`}
           >
             {message.isImage ? (
               <img
                 src={message.text}
                 alt="Generated from prompt"
-                className="w-full h-auto"
+                className="mx-auto w-64 h-64 object-contain"
               />
             ) : (
-              <Typography>{message.text}</Typography>
+              <Typography variant="h5">{message.text}</Typography>
             )}
           </Box>
         ))}
         {isLoadingResponse && (
-          <Box className="mb-2 p-2 rounded-lg bg-gray-100">
+          <Box className="mb-2 p-2 rounded-lg bg-gray-100 md:p-6">
             <Typography>
               <CircularProgress size={20} className="mr-2" />
               Waiting for response...
@@ -207,7 +209,7 @@ function ChatIA() {
         <div ref={messagesEndRef} />
 
         {isLoadingImageResponse && (
-          <Box className="mb-2 p-2 rounded-lg bg-gray-100">
+          <Box className="mb-2 p-2 rounded-lg bg-gray-100 md:p-6">
             <Typography>
               <CircularProgress size={20} className="mr-2" />
               Waiting for image generation...
