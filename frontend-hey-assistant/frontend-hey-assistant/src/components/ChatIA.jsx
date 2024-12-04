@@ -8,12 +8,12 @@ import {
   Box,
   IconButton,
   CircularProgress,
+  capitalize,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MicIcon from '@mui/icons-material/Mic';
 import BasicModal from './ImageModal';
 
-import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 
@@ -33,6 +33,7 @@ import useApiResponse from '../customHooks/useApiResponse';
 //helpers
 import getGeneratedImageResponse from '../helpers/getGeneratedImageResponse';
 import getImageResponse from '../helpers/getImageResponse';
+import capitalizeFirstLetter from '../helpers/capitalizeFirstLetter';
 
 function ChatIA() {
   const [messages, setMessages] = useState([]);
@@ -64,6 +65,33 @@ function ChatIA() {
     }
     loadVoices();
   }, []);
+
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.resultIndex][0].transcript;
+        if (transcript.toLowerCase().includes('hey assistant')) {
+          recognition.stop();
+          setIsListening(true);
+          recognition.start();
+        } else if (isListening) {
+          const formattedTranscript = capitalizeFirstLetter(transcript);
+          setInputText(formattedTranscript);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error', event);
+      };
+
+      recognition.start();
+    }
+  }, [isListening]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -139,6 +167,22 @@ function ChatIA() {
     }
   };
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    const imageData = await getImageResponse(file);
+    const imageUrl = imageData.url;
+    setImageUrl(imageUrl);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: imageUrl, isUser: true, isImage: true },
+    ]);
+  };
+
+  const recognitionEnabled = useMemo(
+    () => 'webkitSpeechRecognition' in window,
+    []
+  );
+
   // Function that recognizes the voice input and transforms it into text.
   const handleVoiceInput = () => {
     setIsListening(!isListening);
@@ -155,22 +199,6 @@ function ChatIA() {
       alert('The voice input is not supported in this browser.');
     }
   };
-
-  const handleImageUpload = async (event) => {
-    const file = event.target.files[0];
-    const imageData = await getImageResponse(file);
-    const imageUrl = imageData.url;
-    setImageUrl(imageUrl);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { text: imageUrl, isUser: true, isImage: true },
-    ]);
-  };
-
-  const recognitionEnabled = useMemo(
-    () => 'webkitSpeechRecognition' in window,
-    []
-  );
 
   return (
     <Box className="flex flex-col h-screen max-w-full lg:max-w[2500px] mx-auto p-4 overflow-x-hidden">
