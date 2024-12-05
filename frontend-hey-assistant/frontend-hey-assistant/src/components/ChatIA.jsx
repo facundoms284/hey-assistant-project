@@ -183,21 +183,8 @@ function ChatIA() {
     []
   );
 
-  // Function that recognizes the voice input and transforms it into text.
   const handleVoiceInput = () => {
     setIsListening(!isListening);
-    if ('webkitSpeechRecognition' in window) {
-      const recognition = new window.webkitSpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInputText(transcript);
-        setIsListening(false);
-      };
-      recognition.start();
-    } else {
-      alert('The voice input is not supported in this browser.');
-    }
   };
 
   return (
